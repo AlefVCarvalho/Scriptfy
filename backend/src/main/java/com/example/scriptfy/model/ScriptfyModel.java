@@ -10,6 +10,8 @@ import jakarta.validation.constraints.Size;
 @Table(name = "musicas")
 public class ScriptfyModel {
 
+    // Variaveis, restrições para limite, não estar em branco, getters e setters
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
