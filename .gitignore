@@ -1,0 +1,7 @@
+# Segredos e arquivos locais
+**/application-local.properties
+**/uploads/
+
+# Builds
+**/target/
+**/node_modules/
