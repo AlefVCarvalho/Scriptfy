@@ -9,9 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ScriptfyRepository extends JpaRepository<ScriptfyModel, Long> {
-
-    // Formas de Pesquisa, por nome, album e artistas
-
     List<ScriptfyModel> findByNomeContainingIgnoreCase(String nome, Sort sort);
 
     List<ScriptfyModel> findByAlbumContainingIgnoreCase(String album, Sort sort);

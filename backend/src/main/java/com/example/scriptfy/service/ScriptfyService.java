@@ -15,9 +15,9 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+// Aqui ficam as regras do app: o que pode e o que não pode fazer com as músicas
 @Service
 public class ScriptfyService {
-
     private static final List<String> CAMPOS_ORDENAVEIS =
             List.of("id", "nome", "album", "artistas", "tempoSegundos");
 
@@ -32,8 +32,7 @@ public class ScriptfyService {
         this.arquivoService = arquivoService;
     }
 
-    // Listagem, pesquisa e ordenação
-
+    // Lista as músicas, com busca e ordem
     public List<ScriptfyModel> listar(String busca, String campo, String ordenarPor, String direcao) {
         Sort ordenacao = montarOrdenacao(ordenarPor, direcao);
 
@@ -58,8 +57,7 @@ public class ScriptfyService {
                 .orElseThrow(() -> new NoSuchElementException("Música não encontrada com id: " + id));
     }
 
-    // Cadastro
-
+    // Cria música nova (confere os dados antes)
     public ScriptfyModel cadastrar(ScriptfyModel musica) {
         validar(musica);
         musica.setId(null);
@@ -68,8 +66,7 @@ public class ScriptfyService {
         return repository.save(musica);
     }
 
-    // Atualizar
-
+    // Troca os dados da música (não mexe nos arquivos dela)
     public ScriptfyModel atualizar(Long id, ScriptfyModel dados) {
         ScriptfyModel existente = buscarPorId(id);
         validar(dados);
@@ -82,8 +79,7 @@ public class ScriptfyService {
         return repository.save(existente);
     }
 
-    // Excluir
-
+    // Apaga a música e também o áudio e a imagem dela
     public void excluir(Long id) {
         ScriptfyModel musica = buscarPorId(id);
         repository.delete(musica);
@@ -91,8 +87,7 @@ public class ScriptfyService {
         arquivoService.excluirImagem(musica.getImagemCapa());
     }
 
-    // Audio
-
+    // Guarda o áudio novo e apaga o antigo
     public ScriptfyModel salvarAudio(Long id, MultipartFile arquivo) {
         ScriptfyModel musica = buscarPorId(id);
         String novoArquivo = arquivoService.salvarAudio(arquivo);
@@ -119,8 +114,7 @@ public class ScriptfyService {
         return arquivoService.carregarAudio(musica.getArquivoAudio());
     }
 
-    // Imagem
-
+    // Guarda a imagem nova e apaga a antiga
     public ScriptfyModel salvarImagem(Long id, MultipartFile arquivo) {
         ScriptfyModel musica = buscarPorId(id);
         String novoArquivo = arquivoService.salvarImagem(arquivo);
@@ -147,8 +141,7 @@ public class ScriptfyService {
         return arquivoService.carregarImagem(musica.getImagemCapa());
     }
 
-    // Funções auxiliares
-
+    // Confere se os dados da música estão certinhos
     private void validar(ScriptfyModel musica) {
         if (musica == null) {
             throw new IllegalArgumentException("Os dados da música são obrigatórios");
@@ -164,6 +157,7 @@ public class ScriptfyService {
         }
     }
 
+    // Escolhe por qual campo e em qual ordem listar
     private Sort montarOrdenacao(String ordenarPor, String direcao) {
         String campo = (ordenarPor == null || ordenarPor.isBlank()) ? "nome" : ordenarPor;
         if (!CAMPOS_ORDENAVEIS.contains(campo)) {

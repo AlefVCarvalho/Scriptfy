@@ -14,7 +14,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Map<String, String>> arquivoMuitoGrande(MaxUploadSizeExceededException e) {
-                return ResponseEntity.status(413)
+        return ResponseEntity.status(413)
                 .body(Map.of("mensagem", "Arquivo muito grande. O limite é de 30 MB"));
     }
 

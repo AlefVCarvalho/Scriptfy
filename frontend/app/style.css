@@ -1,0 +1,418 @@
+/* Visual do app: fundo escuro, uma cor de destaque (lima) e um brilhinho só nos botões principais. */
+
+/* Cores e configurações gerais */
+:root {
+  --fundo: #08080b;
+  --texto: #f3efe6;
+  --texto-suave: rgba(243, 239, 230, 0.55);
+  --borda: rgba(243, 239, 230, 0.1);
+  --destaque: #e4ff5c;
+  --brilho: 0 0 22px rgba(228, 255, 92, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  background: #050507;
+  color: var(--texto);
+  font-family: "Bricolage Grotesque Variable", system-ui, sans-serif;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+input {
+  font: inherit;
+  color: inherit;
+}
+
+/* A "moldura" do celular. No computador fica no meio, no celular ocupa a tela toda */
+.celular {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--fundo);
+}
+
+@media (min-width: 520px) {
+  .celular {
+    height: min(880px, 100dvh - 40px);
+    margin-top: 20px;
+    border-radius: 40px;
+    border: 1px solid var(--borda);
+  }
+}
+
+/* Topo e área principal */
+.tela {
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px 20px 120px;
+}
+
+.tela.com-player {
+  padding-bottom: 210px;
+}
+
+.topo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.logo {
+  height: 40px;
+}
+
+.titulo {
+  font-size: 38px;
+  letter-spacing: -0.04em;
+  margin-bottom: 16px;
+}
+
+.busca {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--borda);
+  background: rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+
+.busca:focus {
+  border-color: var(--destaque);
+  box-shadow: 0 0 24px -6px rgba(228, 255, 92, 0.4);
+}
+
+.vazio {
+  color: var(--texto-suave);
+  text-align: center;
+  padding: 40px 0;
+}
+
+/* Capas dos álbuns (as cores vêm do JavaScript) */
+.capa {
+  flex: none;
+  aspect-ratio: 1;
+  border-radius: 14px;
+}
+
+.capa.pequena {
+  width: 48px;
+}
+
+.capa.media {
+  width: 100%;
+  border-radius: 22px;
+}
+
+.capa.grande {
+  width: 190px;
+  border-radius: 0;
+}
+
+/* Botão redondo de play */
+.botao-play {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 22px;
+  background: var(--destaque);
+  color: #11140a;
+  box-shadow: var(--brilho);
+}
+
+.botao-play.pequeno {
+  width: 42px;
+  height: 42px;
+  font-size: 15px;
+}
+
+.icone {
+  width: 36px;
+  height: 44px;
+  color: var(--texto-suave);
+}
+
+/* Lista de músicas */
+.linha {
+  display: flex;
+  align-items: center;
+  border-radius: 18px;
+}
+
+.linha.ativa {
+  background: linear-gradient(90deg, rgba(228, 255, 92, 0.1), transparent);
+}
+
+.linha.ativa strong {
+  color: var(--destaque);
+}
+
+.linha-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px;
+  text-align: left;
+}
+
+.textos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.textos strong,
+.textos small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.textos small {
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+.tempo,
+.numero {
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.numero {
+  width: 48px;
+  text-align: center;
+}
+
+/* Álbuns */
+.grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 16px;
+}
+
+.cartao-album {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  text-align: left;
+}
+
+.cartao-album .capa {
+  margin-bottom: 8px;
+}
+
+.cartao-album small {
+  color: var(--texto-suave);
+}
+
+.voltar {
+  color: var(--texto-suave);
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.album-topo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.album-topo .capa {
+  margin-bottom: 14px;
+}
+
+.album-topo h1 {
+  font-size: 30px;
+  letter-spacing: -0.04em;
+}
+
+.album-topo p {
+  color: var(--texto-suave);
+  margin-bottom: 10px;
+}
+
+/* Player */
+.player {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 92px;
+  padding: 10px 14px 6px;
+  border-radius: 22px;
+  background: #18181e;
+  border: 1px solid var(--borda);
+}
+
+.player-linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-linha .textos {
+  margin-left: 4px;
+}
+
+.player-barra {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--texto-suave);
+}
+
+.player-barra input {
+  flex: 1;
+  accent-color: var(--destaque);
+}
+
+/* Menu de baixo */
+.menu {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  height: 64px;
+  display: grid;
+  grid-template-columns: 1fr 72px 1fr;
+  align-items: center;
+  border-radius: 32px;
+  background: #18181e;
+  border: 1px solid var(--borda);
+}
+
+.menu button {
+  color: var(--texto-suave);
+  font-size: 15px;
+}
+
+.menu button.ativo {
+  color: var(--destaque);
+  text-shadow: 0 0 14px rgba(228, 255, 92, 0.7);
+}
+
+.menu .botao-adicionar {
+  justify-self: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  font-size: 30px;
+  line-height: 1;
+  background: var(--destaque);
+  color: #11140a;
+  box-shadow: var(--brilho);
+  transform: translateY(-8px);
+}
+
+/* Janela de adicionar e editar */
+.fundo-janela {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(4, 4, 6, 0.7);
+}
+
+.janela {
+  width: 100%;
+  padding: 24px 24px 28px;
+  border-radius: 30px 30px 0 0;
+  background: #121217;
+  border-top: 1px solid rgba(228, 255, 92, 0.5);
+  box-shadow: 0 -10px 40px -10px rgba(228, 255, 92, 0.25);
+}
+
+.janela h2 {
+  font-size: 24px;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+
+.janela label {
+  display: block;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.janela input:not([type="file"]) {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 6px 0;
+  font-size: 18px;
+  color: var(--texto);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--borda);
+  outline: none;
+}
+
+.janela input:focus {
+  border-bottom-color: var(--destaque);
+}
+
+.duas-colunas {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  gap: 18px;
+}
+
+.janela label.arquivo {
+  margin-top: 18px;
+  padding: 14px;
+  text-align: center;
+  font-size: 15px;
+  border: 1px dashed var(--borda);
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.erro {
+  margin-top: 12px;
+  color: #ff8a7a;
+  font-size: 14px;
+}
+
+.botao-salvar {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 99px;
+  font-weight: 700;
+  background: var(--destaque);
+  color: #11140a;
+  box-shadow: var(--brilho);
+}
+
+.botao-salvar:disabled {
+  opacity: 0.5;
+}

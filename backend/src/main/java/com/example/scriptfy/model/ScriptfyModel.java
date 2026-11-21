@@ -6,12 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+// Essa é a "música": cada campo vira uma coluna na tabela do banco
 @Entity
 @Table(name = "musicas")
 public class ScriptfyModel {
-
-    // Variaveis, restrições para limite, não estar em branco, getters e setters
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

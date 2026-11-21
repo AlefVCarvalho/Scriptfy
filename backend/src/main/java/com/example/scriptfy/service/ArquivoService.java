@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+// Cuida dos arquivos: guarda, procura e apaga os áudios e as imagens
 @Service
 public class ArquivoService {
-
     private static final Logger log = LoggerFactory.getLogger(ArquivoService.class);
 
     private static final List<String> EXTENSOES_AUDIO = List.of("mp3", "wav", "m4a", "aac");
@@ -41,8 +41,6 @@ public class ArquivoService {
         log.info("Pasta de uploads: {}", base);
     }
 
-    // Salvar arquivos
-
     public String salvarAudio(MultipartFile arquivo) {
         return salvar(arquivo, pastaAudio, EXTENSOES_AUDIO, "áudio");
     }
@@ -50,8 +48,6 @@ public class ArquivoService {
     public String salvarImagem(MultipartFile arquivo) {
         return salvar(arquivo, pastaImagens, EXTENSOES_IMAGEM, "imagem");
     }
-
-    // Carregar
 
     public Resource carregarAudio(String nome) {
         return carregar(pastaAudio, nome);
@@ -61,8 +57,6 @@ public class ArquivoService {
         return carregar(pastaImagens, nome);
     }
 
-    // Excluir
-
     public void excluirAudio(String nome) {
         excluir(pastaAudio, nome);
     }
@@ -71,8 +65,7 @@ public class ArquivoService {
         excluir(pastaImagens, nome);
     }
 
-    // ---------- MÉTODOS AUXILIARES ----------
-
+    // Guarda o arquivo na pasta com um nome novo, pra nunca repetir
     private String salvar(MultipartFile arquivo, Path pasta, List<String> extensoesPermitidas, String tipo) {
         if (arquivo == null || arquivo.isEmpty()) {
             throw new IllegalArgumentException("Nenhum arquivo de " + tipo + " foi enviado");
@@ -112,6 +105,7 @@ public class ArquivoService {
         }
     }
 
+    // Garante que ninguém consiga pegar arquivo de fora da pasta de uploads
     private Path resolverSeguro(Path pasta, String nome) {
         Path caminho = pasta.resolve(nome).normalize();
         if (!caminho.startsWith(pasta)) {

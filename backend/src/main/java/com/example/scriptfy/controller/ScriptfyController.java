@@ -14,10 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+// Aqui ficam os "endereços" que o app usa para conversar com o servidor
 @RestController
 @RequestMapping("/musicas")
 public class ScriptfyController {
-
     private final ScriptfyService service;
 
     @Autowired
@@ -25,7 +25,7 @@ public class ScriptfyController {
         this.service = service;
     }
 
-    // Função get para listar músicas, com busca, ordenação e paginação
+    // Mostra as músicas (dá pra buscar e escolher a ordem)
     @GetMapping
     public ResponseEntity<?> listar(
             @RequestParam(name = "busca", required = false) String busca,
@@ -39,7 +39,7 @@ public class ScriptfyController {
         }
     }
 
-    // Função get para buscar música por id
+    // Mostra uma música só
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable("id") Long id) {
         try {
@@ -49,7 +49,7 @@ public class ScriptfyController {
         }
     }
 
-    // Função post para cadastrar música
+    // Salva uma música nova
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody ScriptfyModel musica) {
         try {
@@ -60,7 +60,7 @@ public class ScriptfyController {
         }
     }
 
-    // Função put para atualizar música
+    // Muda os dados de uma música
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable("id") Long id,
                                        @RequestBody ScriptfyModel dados) {
@@ -73,7 +73,7 @@ public class ScriptfyController {
         }
     }
 
-    // Função delete para excluir música
+    // Apaga uma música
     @DeleteMapping("/{id}")
     public ResponseEntity<?> excluir(@PathVariable("id") Long id) {
         try {
@@ -84,9 +84,7 @@ public class ScriptfyController {
         }
     }
 
-    // Áudio
-
-    // Função post para enviar arquivo de áudio
+    // Recebe o arquivo de som da música
     @PostMapping(value = "/{id}/audio", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> enviarAudio(@PathVariable("id") Long id,
                                          @RequestParam(name = "arquivo", required = false) MultipartFile arquivo) {
@@ -99,7 +97,7 @@ public class ScriptfyController {
         }
     }
 
-    // Função get para tocar áudio
+    // Entrega o som pra tocar
     @GetMapping("/{id}/audio")
     public ResponseEntity<?> tocarAudio(@PathVariable("id") Long id) {
         try {
@@ -109,9 +107,7 @@ public class ScriptfyController {
         }
     }
 
-    // Imagem
-
-    // Função post para enviar arquivo de imagem
+    // Recebe a imagem da capa
     @PostMapping(value = "/{id}/imagem", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> enviarImagem(@PathVariable("id") Long id,
                                           @RequestParam(name = "arquivo", required = false) MultipartFile arquivo) {
@@ -124,7 +120,7 @@ public class ScriptfyController {
         }
     }
 
-    // Função get para ver imagem
+    // Entrega a imagem da capa
     @GetMapping("/{id}/imagem")
     public ResponseEntity<?> verImagem(@PathVariable("id") Long id) {
         try {
@@ -134,8 +130,7 @@ public class ScriptfyController {
         }
     }
 
-    // Funções auxiliares
-
+    // Os dois métodos abaixo só ajudam a montar as respostas
     private ResponseEntity<Resource> respostaArquivo(Resource recurso) {
         MediaType tipo = MediaTypeFactory.getMediaType(recurso)
                 .orElse(MediaType.APPLICATION_OCTET_STREAM);
