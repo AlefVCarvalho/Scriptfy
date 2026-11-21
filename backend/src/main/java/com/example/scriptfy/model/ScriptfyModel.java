@@ -39,6 +39,9 @@ public class ScriptfyModel {
     @Column(name = "arquivo_audio")
     private String arquivoAudio;
 
+    @Column(name = "imagem_capa")
+    private String imagemCapa;
+
     public ScriptfyModel() {
     }
 
@@ -59,4 +62,7 @@ public class ScriptfyModel {
 
     public String getArquivoAudio() { return arquivoAudio; }
     public void setArquivoAudio(String arquivoAudio) { this.arquivoAudio = arquivoAudio; }
+
+    public String getImagemCapa() { return imagemCapa; }
+    public void setImagemCapa(String imagemCapa) { this.imagemCapa = imagemCapa; }
 }

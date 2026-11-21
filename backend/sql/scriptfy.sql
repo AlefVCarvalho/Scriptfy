@@ -8,5 +8,6 @@ CREATE TABLE musicas (
     album VARCHAR(100) NOT NULL,
     artistas VARCHAR(100) NOT NULL,
     tempo_segundos INT NOT NULL,
-    arquivo_audio VARCHAR(255)
+    arquivo_audio VARCHAR(255),
+    imagem_capa VARCHAR(255)
 );
