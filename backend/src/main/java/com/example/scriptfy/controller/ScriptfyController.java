@@ -49,23 +49,25 @@ public class ScriptfyController {
         }
     }
 
-    // Salva uma música nova
-    @PostMapping
-    public ResponseEntity<?> cadastrar(@RequestBody ScriptfyModel musica) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> cadastrar(@ModelAttribute ScriptfyModel musica,
+                                       @RequestParam(name = "audio", required = false) MultipartFile audio,
+                                       @RequestParam(name = "imagem", required = false) MultipartFile imagem) {
         try {
-            ScriptfyModel salva = service.cadastrar(musica);
+            ScriptfyModel salva = service.cadastrar(musica, audio, imagem);
             return ResponseEntity.status(HttpStatus.CREATED).body(salva);
         } catch (IllegalArgumentException e) {
             return erro(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
-    // Muda os dados de uma música
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> atualizar(@PathVariable("id") Long id,
-                                       @RequestBody ScriptfyModel dados) {
+                                       @ModelAttribute ScriptfyModel dados,
+                                       @RequestParam(name = "audio", required = false) MultipartFile audio,
+                                       @RequestParam(name = "imagem", required = false) MultipartFile imagem) {
         try {
-            return ResponseEntity.ok(service.atualizar(id, dados));
+            return ResponseEntity.ok(service.atualizar(id, dados, audio, imagem));
         } catch (NoSuchElementException e) {
             return erro(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -84,19 +86,6 @@ public class ScriptfyController {
         }
     }
 
-    // Recebe o arquivo de som da música
-    @PostMapping(value = "/{id}/audio", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> enviarAudio(@PathVariable("id") Long id,
-                                         @RequestParam(name = "arquivo", required = false) MultipartFile arquivo) {
-        try {
-            return ResponseEntity.ok(service.salvarAudio(id, arquivo));
-        } catch (NoSuchElementException e) {
-            return erro(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return erro(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
     // Entrega o som pra tocar
     @GetMapping("/{id}/audio")
     public ResponseEntity<?> tocarAudio(@PathVariable("id") Long id) {
@@ -104,19 +93,6 @@ public class ScriptfyController {
             return respostaArquivo(service.carregarAudio(id));
         } catch (NoSuchElementException e) {
             return erro(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
-    // Recebe a imagem da capa
-    @PostMapping(value = "/{id}/imagem", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> enviarImagem(@PathVariable("id") Long id,
-                                          @RequestParam(name = "arquivo", required = false) MultipartFile arquivo) {
-        try {
-            return ResponseEntity.ok(service.salvarImagem(id, arquivo));
-        } catch (NoSuchElementException e) {
-            return erro(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return erro(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 

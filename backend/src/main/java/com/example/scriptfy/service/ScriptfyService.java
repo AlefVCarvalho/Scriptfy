@@ -57,26 +57,81 @@ public class ScriptfyService {
                 .orElseThrow(() -> new NoSuchElementException("Música não encontrada com id: " + id));
     }
 
-    // Cria música nova (confere os dados antes)
-    public ScriptfyModel cadastrar(ScriptfyModel musica) {
+    // Cria música nova
+    public ScriptfyModel cadastrar(ScriptfyModel musica, MultipartFile audio, MultipartFile imagem) {
         validar(musica);
+        if (audio == null || audio.isEmpty()) {
+            throw new IllegalArgumentException("O arquivo de áudio é obrigatório");
+        }
+
         musica.setId(null);
         musica.setArquivoAudio(null);
         musica.setImagemCapa(null);
-        return repository.save(musica);
+
+        String nomeAudio = null;
+        String nomeImagem = null;
+        try {
+            nomeAudio = arquivoService.salvarAudio(audio);
+            if (imagem != null && !imagem.isEmpty()) {
+                nomeImagem = arquivoService.salvarImagem(imagem);
+            }
+            musica.setArquivoAudio(nomeAudio);
+            musica.setImagemCapa(nomeImagem);
+            return repository.save(musica);
+        } catch (RuntimeException e) {
+            // se algo falhar, não deixa arquivo solto no disco
+            arquivoService.excluirAudio(nomeAudio);
+            arquivoService.excluirImagem(nomeImagem);
+            throw e;
+        }
     }
 
-    // Troca os dados da música (não mexe nos arquivos dela)
-    public ScriptfyModel atualizar(Long id, ScriptfyModel dados) {
+    // Edita os dados; áudio e imagem só mudam se um arquivo novo for enviado
+    public ScriptfyModel atualizar(Long id, ScriptfyModel dados, MultipartFile audio, MultipartFile imagem) {
         ScriptfyModel existente = buscarPorId(id);
         validar(dados);
+
+        boolean temNovoAudio = audio != null && !audio.isEmpty();
+        boolean temNovaImagem = imagem != null && !imagem.isEmpty();
+
+        if (!temNovoAudio && existente.getArquivoAudio() == null) {
+            throw new IllegalArgumentException("O arquivo de áudio é obrigatório");
+        }
+
+        String audioAntigo = existente.getArquivoAudio();
+        String imagemAntiga = existente.getImagemCapa();
+        String novoAudio = null;
+        String novaImagem = null;
 
         existente.setNome(dados.getNome());
         existente.setAlbum(dados.getAlbum());
         existente.setArtistas(dados.getArtistas());
         existente.setTempoSegundos(dados.getTempoSegundos());
 
-        return repository.save(existente);
+        ScriptfyModel salva;
+        try {
+            if (temNovoAudio) {
+                novoAudio = arquivoService.salvarAudio(audio);
+                existente.setArquivoAudio(novoAudio);
+            }
+            if (temNovaImagem) {
+                novaImagem = arquivoService.salvarImagem(imagem);
+                existente.setImagemCapa(novaImagem);
+            }
+            salva = repository.save(existente);
+        } catch (RuntimeException e) {
+            arquivoService.excluirAudio(novoAudio);
+            arquivoService.excluirImagem(novaImagem);
+            throw e;
+        }
+
+        if (novoAudio != null) {
+            arquivoService.excluirAudio(audioAntigo);
+        }
+        if (novaImagem != null) {
+            arquivoService.excluirImagem(imagemAntiga);
+        }
+        return salva;
     }
 
     // Apaga a música e também o áudio e a imagem dela
@@ -87,24 +142,6 @@ public class ScriptfyService {
         arquivoService.excluirImagem(musica.getImagemCapa());
     }
 
-    // Guarda o áudio novo e apaga o antigo
-    public ScriptfyModel salvarAudio(Long id, MultipartFile arquivo) {
-        ScriptfyModel musica = buscarPorId(id);
-        String novoArquivo = arquivoService.salvarAudio(arquivo);
-        String arquivoAntigo = musica.getArquivoAudio();
-
-        musica.setArquivoAudio(novoArquivo);
-        ScriptfyModel salva;
-        try {
-            salva = repository.save(musica);
-        } catch (RuntimeException e) {
-            arquivoService.excluirAudio(novoArquivo);
-            throw e;
-        }
-
-        arquivoService.excluirAudio(arquivoAntigo);
-        return salva;
-    }
 
     public Resource carregarAudio(Long id) {
         ScriptfyModel musica = buscarPorId(id);
@@ -112,25 +149,6 @@ public class ScriptfyService {
             throw new NoSuchElementException("Esta música não possui arquivo de áudio");
         }
         return arquivoService.carregarAudio(musica.getArquivoAudio());
-    }
-
-    // Guarda a imagem nova e apaga a antiga
-    public ScriptfyModel salvarImagem(Long id, MultipartFile arquivo) {
-        ScriptfyModel musica = buscarPorId(id);
-        String novoArquivo = arquivoService.salvarImagem(arquivo);
-        String arquivoAntigo = musica.getImagemCapa();
-
-        musica.setImagemCapa(novoArquivo);
-        ScriptfyModel salva;
-        try {
-            salva = repository.save(musica);
-        } catch (RuntimeException e) {
-            arquivoService.excluirImagem(novoArquivo);
-            throw e;
-        }
-
-        arquivoService.excluirImagem(arquivoAntigo);
-        return salva;
     }
 
     public Resource carregarImagem(Long id) {
